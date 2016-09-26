@@ -1,7 +1,6 @@
 # Azure
 This repository contains some Azure PowerShell scripts / snippets
-## Scripts
-###  New-AzurePublishSettingsFile
+## New-AzurePublishSettingsFile.ps1
 Creates an Azure publishettings file. Usage:
 ```powershell
 .\New-AzurePublishSettingsFile.ps1 `
