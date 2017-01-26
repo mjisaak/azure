@@ -11,6 +11,14 @@ Creates an Azure publishettings file. Usage:
     -FilePath 'yourFileLocation'
 ```
 
+## Script: New-ServicePrincipal.ps1
+Creates an AAD application and service principal with contributor right to the specified subscription. 
+This is used to authenticate a deployment application / script / CI-system instead of using a username / password login.
+```powershell
+.\New-ServicePrincipal.ps1 `
+    -CertificatePassword 'yourCertificatePassword'
+    -SubscriptionName 'yourSubscriptionName' 
+```
 
 ## Snippet: Remove-EmptyAzureResourceGroups
 Removes all resource groups for the current selected subscription that has no resources. 
