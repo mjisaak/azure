@@ -44,3 +44,19 @@ function Remove-EmptyAzureResourceGroups
     }   
 }
 ```
+## Snippet: Retrieve all application role assignment for a service principal
+
+
+```powershell
+Import-Module AzureAD
+Connect-AzureAD
+Get-AzureADServicePrincipal | ForEach-Object {
+  $appRoles = @{ "$([Guid]::Empty.ToString())" = "(default)" }
+  $_.AppRoles | % { $appRoles[$_.Id] = $_.DisplayName }
+
+  # Get the app role assignments for this app, and add a field for the app role name
+  Get-AzureADServiceAppRoleAssignment -ObjectId ($_.ObjectId) | % {
+    $_ | Add-Member "AppRoleDisplayName" $appRoles[$_.Id] -Passthru
+  }
+} | Where PrincipalId -eq (Get-AzureADServicePrincipal -SearchString "myb2capp" | select -ExpandProperty ObjectId) | fl *
+```
