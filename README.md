@@ -60,3 +60,27 @@ Get-AzureADServicePrincipal | ForEach-Object {
   }
 } | Where PrincipalId -eq (Get-AzureADServicePrincipal -SearchString "myb2capp" | select -ExpandProperty ObjectId) | fl *
 ```
+
+## Snippet: Create an aad application and service principal using a password
+
+```powershell
+Login-AzureRmAccount
+
+$ApplicationName = "myapp"
+$URI = "http://myapp.com"
+$endDate = [System.DateTime]::Now.AddYears(2)
+
+$bytes = New-Object Byte[] 32
+$rand = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rand.GetBytes($bytes)
+$ClientSecret = [System.Convert]::ToBase64String($bytes)
+
+$aadApplication = New-AzureRmADApplication `
+    -DisplayName $ApplicationName `
+    -HomePage $URI `
+    -IdentifierUris $URI `
+    -Password $ClientSecret `
+    -EndDate $endDate
+
+New-AzureRmADServicePrincipal -ApplicationId $aadApplication.ApplicationId
+```
