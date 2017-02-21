@@ -84,3 +84,11 @@ $aadApplication = New-AzureRmADApplication `
 
 New-AzureRmADServicePrincipal -ApplicationId $aadApplication.ApplicationId
 ```
+
+## Snippet: Assign RBAC to a service principal:
+```powershell
+New-AzureRmRoleAssignment `
+    -RoleDefinitionName Contributor `
+    -ServicePrincipalName '<ApplicationId>' `
+    -Scope '/subscriptions/<SubscriptionId>'
+```
