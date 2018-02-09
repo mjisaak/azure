@@ -92,3 +92,16 @@ New-AzureRmRoleAssignment `
     -ServicePrincipalName '<ApplicationId>' `
     -Scope '/subscriptions/<SubscriptionId>'
 ```
+
+## Snippet: Rename an Azure Storage Blob using Rename-AzureStorageBlob.ps1:
+In this example we remove the first three characters of the blob name using a simple regex:
+```powershell
+$storageAccount = '<Enter Storage Account Connection String>'
+$containerName = '<Enter Storage Container Name>'
+$storageContext = New-AzureStorageContext -ConnectionString $storageAccount
+
+$containers = Get-AzureStorageContainer -Context $storageContext -Name $containerName
+Get-AzureStorageBlob -Container $containers.Name -Context $storageContext | ForEach-Object {
+    $_ | Rename-AzureStorageBlob -NewName ($_.Name -replace '^...') -StorageContext $storageContext
+}
+```
