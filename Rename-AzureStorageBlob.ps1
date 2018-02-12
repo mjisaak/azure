@@ -24,8 +24,9 @@ function Rename-AzureStorageBlob
         -DestContainer $Blob.ICloudBlob.Container.Name
 
     $status = $blobCopyAction | Get-AzureStorageBlobCopyState 
+    
 
-    while ($status.Status -eq 'Pending') 
+    while ($status.Status -ne 'Success') 
     { 
         $status = $blobCopyAction | Get-AzureStorageBlobCopyState         
         Start-Sleep -Milliseconds 50
