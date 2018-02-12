@@ -12,7 +12,6 @@ function Rename-AzureStorageBlob
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
         [Microsoft.WindowsAzure.Commands.Common.Storage.ResourceModel.AzureStorageBlob]$Blob,
 
-
         [Parameter(Mandatory=$true, Position=1)]
         [string]$NewName,
 
@@ -26,7 +25,6 @@ function Rename-AzureStorageBlob
         -DestBlob $NewName `
         -Context $StorageContext `
         -DestContainer $Blob.ICloudBlob.Container.Name
-
 
     $status = $blobCopyAction | Get-AzureStorageBlobCopyState 
 
