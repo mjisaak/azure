@@ -2,7 +2,7 @@
 .Synopsis
    Renames an Azure Storage Blob
 .EXAMPLE
-    Rename-AzureStorageBlob -Blob $myBlob -NewName "MyNewName" -StorageContext $storageContext
+    Rename-AzureStorageBlob -Blob $myBlob -NewName "MyNewName"
 #>
 function Rename-AzureStorageBlob
 {
@@ -13,17 +13,14 @@ function Rename-AzureStorageBlob
         [Microsoft.WindowsAzure.Commands.Common.Storage.ResourceModel.AzureStorageBlob]$Blob,
 
         [Parameter(Mandatory=$true, Position=1)]
-        [string]$NewName,
-
-        [Parameter(Mandatory=$true, Position=2)]
-        [Microsoft.WindowsAzure.Commands.Storage.AzureStorageContext]$StorageContext
+        [string]$NewName
     )
 
   Process {     
     $blobCopyAction = Start-AzureStorageBlobCopy `
         -ICloudBlob $Blob.ICloudBlob `
         -DestBlob $NewName `
-        -Context $StorageContext `
+        -Context $Blob.Context `
         -DestContainer $Blob.ICloudBlob.Container.Name
 
     $status = $blobCopyAction | Get-AzureStorageBlobCopyState 
@@ -34,6 +31,6 @@ function Rename-AzureStorageBlob
         Start-Sleep -Milliseconds 50
     }
 
-    $Blob | Remove-AzureStorageBlob -Force
+    $Blob | Remove-AzureStorageBlob -Force 
   }
 }
