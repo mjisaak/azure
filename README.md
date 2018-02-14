@@ -102,6 +102,6 @@ $storageContext = New-AzureStorageContext -ConnectionString $storageAccount
 
 $containers = Get-AzureStorageContainer -Context $storageContext -Name $containerName
 Get-AzureStorageBlob -Container $containers.Name -Context $storageContext | ForEach-Object {
-    $_ | Rename-AzureStorageBlob -NewName ($_.Name -replace '^...') -StorageContext $storageContext
+    $_ | Rename-AzureStorageBlob -NewName ($_.Name -replace '^...')
 }
 ```
