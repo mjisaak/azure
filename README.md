@@ -105,3 +105,62 @@ Get-AzureStorageBlob -Container $containers.Name -Context $storageContext | ForE
     $_ | Rename-AzureStorageBlob -NewName ($_.Name -replace '^...')
 }
 ```
+## Snippet: Perform a sql query in PowerShell using a callback 
+```powershell
+function Receive-SqlQuery
+{
+    Param
+    (
+        [string]$ConnectionString,
+        [string]$SqlQuery,
+        [scriptblock]$ResultProcessor
+    )
+
+    try 
+    {
+        $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $ConnectionString
+        $sqlConnection.Open()
+    
+        try
+        {
+            $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($SqlQuery, $sqlConnection)
+            $reader = $sqlCommand.ExecuteReader()
+            Invoke-Command $ResultProcessor -ArgumentList $reader
+        }
+        finally # cleanup reader
+        {
+            if ($reader)
+            {
+                $reader.Close()
+            }
+        }
+    }
+    finally
+    {
+        $sqlConnection.Close();
+    }
+}
+
+# Invoke-Example:
+ $readerCallback = {
+        Param($reader)
+        while ($reader.Read()) {
+            [PsCustomObject]@{
+                Id = $reader['id']
+                ConnectionId = $reader['connectionid']
+                ProfileId = $reader['profileid']
+                Role = $reader['asrole']
+            }
+        }    
+    }
+
+    $query = 
+@'
+SELECT [id]
+      ,[connectionid]
+      ,[profileid]
+      ,[asrole]
+  FROM [dbo].[mytable]
+'@
+    Receive-SqlQuery -ConnectionString $cs -SqlQuery $query -ResultProcessor $readerCallback
+```
