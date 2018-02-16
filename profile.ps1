@@ -4,5 +4,5 @@ $profilePath = 'https://raw.githubusercontent.com/mjisaak/azure/master/profile.p
 
 function Say-Hello 
 {
-  Write-Host "This works."
+  Write-Host "This works fine."
 }
