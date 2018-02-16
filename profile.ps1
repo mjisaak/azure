@@ -1,5 +1,5 @@
 
 function Say-Hello 
 {
-  Write-Host "This works..."
+  Write-Host "Hello, World!"
 }
