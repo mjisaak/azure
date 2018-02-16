@@ -1,5 +1,4 @@
-
-function Say-Hello 
-{
-  Write-Host "Hello, World!"
-}
+ function Show-HelloWorld
+ {
+     Write-Host "hello, world!"
+ }
