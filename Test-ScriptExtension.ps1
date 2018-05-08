@@ -1,0 +1,1 @@
+"Hello, World" | Set-Content D:\itworks.txt -Force
