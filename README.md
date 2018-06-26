@@ -12,36 +12,36 @@ Creates an Azure publishettings file. Usage:
 ```
 
 ## Script: New-ServicePrincipal.ps1
-Creates an AAD application and service principal with contributor right to the specified subscription. 
+Creates an AAD application and service principal with contributor right to the specified subscription.
 This is used to authenticate a deployment application / script / CI-system instead of using a username / password login.
 ```powershell
 .\New-ServicePrincipal.ps1 `
     -CertificatePassword 'yourCertificatePassword'
-    -SubscriptionName 'yourSubscriptionName' 
+    -SubscriptionName 'yourSubscriptionName'
 ```
 
 ## Snippet: Remove-EmptyAzureResourceGroups
-Removes all resource groups for the current selected subscription that has no resources. 
+Removes all resource groups for the current selected subscription that has no resources.
 ```powershell
 function Remove-EmptyAzureResourceGroups
 {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param ()
-        
+
     $resourceGroups = Get-AzureRmResourceGroup -WarningAction SilentlyContinue
     $resources = Get-AzureRmResource
- 
+
     $nonEmptyResourceGroups = $resourceGroups | foreach {
-        $resources | ? ResourceGroupName -eq $_.ResourceGroupName | select -expand ResourceGroupName -Unique 
-    }        
+        $resources | ? ResourceGroupName -eq $_.ResourceGroupName | select -expand ResourceGroupName -Unique
+    }
     $ResourceGroupsToDelete = $resourceGroups | where { $_.ResourceGroupName -notin $nonEmptyResourceGroups }
- 
+
     $ResourceGroupsToDelete | foreach {
         if ($pscmdlet.ShouldProcess($_.ResourceGroupName, 'Remove-AzureRmResourceGroup'))
         {
             $_ | Remove-AzureRmResourceGroup -Confirm:$false
         }
-    }   
+    }
 }
 ```
 ## Snippet: Retrieve all application role assignment for a service principal
@@ -105,7 +105,7 @@ Get-AzureStorageBlob -Container $containers.Name -Context $storageContext | ForE
     $_ | Rename-AzureStorageBlob -NewName ($_.Name -replace '^...')
 }
 ```
-## Snippet: Perform a sql query in PowerShell using a callback 
+## Snippet: Perform a sql query in PowerShell using a callback
 ```powershell
 function Receive-SqlQuery
 {
@@ -116,11 +116,11 @@ function Receive-SqlQuery
         [scriptblock]$ResultProcessor
     )
 
-    try 
+    try
     {
         $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $ConnectionString
         $sqlConnection.Open()
-    
+
         try
         {
             $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($SqlQuery, $sqlConnection)
@@ -151,10 +151,10 @@ function Receive-SqlQuery
                 ProfileId = $reader['profileid']
                 Role = $reader['asrole']
             }
-        }    
+        }
     }
 
-    $query = 
+    $query =
 @'
 SELECT [id]
       ,[connectionid]
@@ -163,4 +163,40 @@ SELECT [id]
   FROM [dbo].[mytable]
 '@
     Receive-SqlQuery -ConnectionString $cs -SqlQuery $query -ResultProcessor $readerCallback
+```
+
+## Snippet: Retrieve an access token using the client_credentials grant_type (service principal)
+```powershell
+function Get-AzureAdAccessTokenUsingClientCredentials
+{
+    Param
+    (
+        [Parameter(Mandatory=$true, Position=2)]
+        [string]$Tenant,
+
+        [Parameter(Mandatory=$true, Position=3)]
+        [string]$ClientId,
+
+        [Parameter(Mandatory=$true, Position=4)]
+        [string]$ClientSecret
+    )
+
+    $body = @{
+        grant_type = "client_credentials";
+        resource = $clientId;
+        client_id = $clientId;
+        client_secret = $clientSecret;
+    };
+
+    $authorizationHeader = 'Basic {0}';
+    $contentType = 'application/x-www-form-urlencoded';
+    $absoluteUri = "https://login.microsoftonline.com/$Tenant/oauth2/token";
+
+    $credentials = "$($clientId):$($clientSecret)";
+    $encodedCredentials = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($credentials));
+    $headers = @{ Authorization = $authorizationHeader -f $encodedCredentials};
+
+    $result = Invoke-RestMethod -Uri $absoluteUri -Method Post -Body $body -Headers $headers -ContentType $contentType;
+    $result.access_token
+}
 ```
