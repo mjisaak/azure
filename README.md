@@ -201,14 +201,14 @@ function Get-AzureAdAccessTokenUsingClientCredentials
 }
 ```
 ## Snippet: Azure Blob Storage - List all files within a virtual subfolder
-```csharp
+
 Within Azure Blob Storage you have only containers containing blobs, there are no subfolders.
 You can use something like virtual folders by adding the subdirectory to the blob name. E. g.:
-
+```
 /container/myvirtualdir/myblob
-
+```
 And retrieve all blobs that also use the virtual folder using the prefix parameter:
-
+```csharp
 var blobStorageAccount = GetStorageAccount();
 var blobClient = blobStorageAccount.CreateCloudBlobClient();
 var blobContainer = blobClient.GetContainerReference(containerName);
