@@ -200,7 +200,7 @@ function Get-AzureAdAccessTokenUsingClientCredentials
     $result.access_token
 }
 ```
-## Snippet: Retrieve an access token using the client_credentials grant_type (service principal)
+## Snippet: Azure Blob Storage - List all files within a virtual subfolder
 ```csharp
 Within Azure Blob Storage you have only containers containing blobs, there are no subfolders.
 You can use something like virtual folders by adding the subdirectory to the blob name. E. g.:
