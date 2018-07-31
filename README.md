@@ -200,3 +200,17 @@ function Get-AzureAdAccessTokenUsingClientCredentials
     $result.access_token
 }
 ```
+## Snippet: Retrieve an access token using the client_credentials grant_type (service principal)
+```csharp
+Within Azure Blob Storage you have only containers containing blobs, there are no subfolders.
+You can use something like virtual folders by adding the subdirectory to the blob name. E. g.:
+
+/container/myvirtualdir/myblob
+
+And retrieve all blobs that also use the virtual folder using the prefix parameter:
+
+var blobStorageAccount = GetStorageAccount();
+var blobClient = blobStorageAccount.CreateCloudBlobClient();
+var blobContainer = blobClient.GetContainerReference(containerName);
+List<string> blobNames = blobContainer.ListBlobs(prefix: "myvirtualdir").OfType<CloudBlockBlob>().Select(b => b.Name).ToList();
+```
